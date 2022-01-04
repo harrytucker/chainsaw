@@ -5,12 +5,27 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]] # gRPC server
+name = "helloworld-server"
+path = "src/server.rs"
+
+[[bin]] # gRPC server
+name = "helloworld-client"
+path = "src/client.rs"
+
 [dependencies]
-tonic = "0.6" # grpc impl
-prost = "0.9" # protobuffer impl
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] } # async runtime
+# grpc and protobuf implementations
+tonic = "0.6"
+prost = "0.9"
+
+# async runtime
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing"] }
+
+# structured logging
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-error = "0.2"
+color-eyre = "0.5"
 
 [build-dependencies]
 tonic-build = "0.6" # build grpc server at compile-time
