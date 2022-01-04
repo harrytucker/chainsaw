@@ -1,0 +1,16 @@
+[package]
+name = "microservice-template"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tonic = "0.6" # grpc impl
+prost = "0.9" # protobuffer impl
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] } # async runtime
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+[build-dependencies]
+tonic-build = "0.6" # build grpc server at compile-time

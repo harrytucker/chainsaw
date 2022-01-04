@@ -1,0 +1,18 @@
+#+TITLE: Rusty Microservice Template
+#+AUTHOR: Harry Tucker
+
+* Work in Progress [0/8]
+** TODO Overall architecture
+** TODO gRPC server infrastructure to handle arbitrary services
+** TODO Structured logging and instrumentation
+** TODO Metrics through Prometheus
+** TODO Error handling
+** TODO Unit and integration testing
+** TODO Documentation
+** TODO Performance characterisation
+* Context
+In my employment, I pretty much exclusively work with Go. While I take
+performance and such into consideration when writing code, I haven't dealt with
+anything that has hit the limits of the Go runtime. I'm trying to get better
+with Rust so I'd like to see what a gRPC-based microservice would look like in
+Rust.
