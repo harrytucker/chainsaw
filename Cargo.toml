@@ -1,16 +1,16 @@
 [package]
-name = "microservice-template"
+name = "chainsaw"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]] # gRPC server
-name = "helloworld-server"
+name = "chainsaw-server"
 path = "src/server.rs"
 
 [[bin]] # gRPC client
-name = "helloworld-client"
+name = "chainsaw-client"
 path = "src/client.rs"
 
 [dependencies]
@@ -27,6 +27,9 @@ tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 tracing-error = "0.2"
 tracing-log = "0.1"
 color-eyre = "0.5"
+
+# cli and config
+clap = { version = "3.0", features = ["derive", "env"] }
 
 [build-dependencies]
 tonic-build = "0.6" # build grpc code at compile-time

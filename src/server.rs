@@ -15,11 +15,6 @@ use hello_world::{
     HelloReply, HelloRequest,
 };
 
-// TODO: Split logging setup into its own module
-use tracing_error::ErrorLayer;
-use tracing_subscriber::prelude::*;
-use tracing_subscriber::EnvFilter;
-
 use crate::logging::init_subscriber;
 
 mod logging;
@@ -58,7 +53,7 @@ async fn main() -> Result<()> {
     let addr = "0.0.0.0:5001".parse()?;
     let greeter = MyGreeter::default();
     let grpc = Server::builder()
-        .trace_fn(|_| tracing::info_span!("helloworld-server"))
+        .trace_fn(|_| tracing::info_span!("chainsaw-server"))
         .add_service(GreeterServer::new(greeter))
         .serve(addr);
 
