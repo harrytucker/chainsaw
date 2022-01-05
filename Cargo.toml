@@ -23,7 +23,7 @@ tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing"] }
 
 # structured logging
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["registry", "env-filter", "json"] }
 tracing-error = "0.2"
 tracing-log = "0.1"
 color-eyre = "0.5"
