@@ -2,12 +2,14 @@
 extern crate tracing;
 
 use crate::{
+    config::get_configuration,
     grpc::{hello_service::greeter_server::GreeterServer, MyGreeter},
     logging::init_subscriber,
 };
 use color_eyre::eyre::Result;
 use tonic::transport::Server;
 
+mod config;
 mod grpc;
 mod logging;
 
@@ -16,10 +18,12 @@ async fn main() -> Result<()> {
     // easy to read stack-traces
     color_eyre::install()?;
 
+    let configuration = get_configuration()?;
+
     let subscriber = logging::get_subscriber("info"); // default logging level
     init_subscriber(subscriber);
 
-    let addr = "0.0.0.0:5001".parse()?;
+    let addr = format!("{}:{}", configuration.grpc.address, configuration.grpc.port).parse()?;
     let greeter = MyGreeter::default();
     let grpc = Server::builder()
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
