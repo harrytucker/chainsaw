@@ -5,14 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[[bin]] # gRPC server
-name = "chainsaw-server"
-path = "src/server.rs"
-
-[[bin]] # gRPC client
-name = "chainsaw-client"
-path = "src/client.rs"
-
 [dependencies]
 # grpc and protobuf implementations
 tonic = "0.6"
