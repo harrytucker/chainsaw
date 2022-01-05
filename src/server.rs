@@ -20,6 +20,9 @@ use tracing_error::ErrorLayer;
 use tracing_subscriber::prelude::*;
 use tracing_subscriber::EnvFilter;
 
+use crate::logging::init_subscriber;
+
+mod logging;
 pub mod hello_world {
     tonic::include_proto!("helloworld"); // Must match proto package name
 }
@@ -49,15 +52,8 @@ async fn main() -> Result<()> {
     // easy to read stack-traces
     color_eyre::install()?;
 
-    // structured logging setup
-    let log_format = tracing_subscriber::fmt::layer();
-    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("INFO"));
-
-    let subscriber = tracing_subscriber::Registry::default()
-        .with(log_format)
-        .with(env_filter)
-        .with(ErrorLayer::default());
-    tracing::subscriber::set_global_default(subscriber)?;
+    let subscriber = logging::get_subscriber("info"); // default logging level
+    init_subscriber(subscriber);
 
     let addr = "0.0.0.0:5001".parse()?;
     let greeter = MyGreeter::default();
