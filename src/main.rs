@@ -15,8 +15,11 @@ mod logging;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // easy to read stack-traces
-    color_eyre::install()?;
+    // Fancy span traces are omitted from the program when compiling in release
+    // mode to avoid impacting performance.
+    if cfg!(debug_assertions) {
+        color_eyre::install()?;
+    }
 
     let configuration = get_configuration()?;
 
