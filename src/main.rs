@@ -7,6 +7,7 @@ use crate::{
     logging::init_subscriber,
 };
 use color_eyre::eyre::Result;
+use tokio::signal;
 use tonic::transport::Server;
 
 mod config;
@@ -35,10 +36,20 @@ async fn main() -> Result<()> {
 
     // TODO: The gRPC server should be able to start up alongside other APIs,
     // such as extra gRPC services, HTTP endpoints, metrics etc.
-    //
-    // This should also work with neatly terminating all running Tokio tasks
-    // using SIGINT. See the mini_redis server example in the Tonic repo.
-    info!(?addr, "gRPC server starting.");
-    tokio::try_join!(grpc)?;
-    Ok(())
+    info!(?addr, "Revving up Chainsaw!");
+    tokio::spawn(grpc);
+
+    match signal::ctrl_c().await {
+        Ok(()) => {
+            info!("Revving down Chainsaw...");
+            Ok(())
+        }
+        Err(err) => {
+            error!(
+                err = err.to_string().as_str(),
+                "Unable to listen for shutdown signal."
+            );
+            Err(err.into())
+        }
+    }
 }

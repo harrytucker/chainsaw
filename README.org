@@ -1,15 +1,28 @@
-#+TITLE: Rusty Microservice Template
+#+TITLE: Chainsaw - Rusty Microservices
 #+AUTHOR: Harry Tucker
 
-* Work in Progress [0/8]
+* Work in Progress [1/9]
 ** TODO Overall architecture
 ** TODO gRPC server infrastructure to handle arbitrary services
-** TODO Structured logging and instrumentation
+** DONE Structured logging and instrumentation
 ** TODO Metrics through Prometheus
 ** TODO Error handling
 ** TODO Unit and integration testing
 ** TODO Documentation
 ** TODO Performance characterisation
+** TODO Compile protobuffers from external git repository
+Using Go, we normally generate our protobuffer code ahead of time, and then
+store the generated code as packages in a Git repository. Tonic works a bit
+differently, generating the code at compile-time using a macros and a build
+script. This of course, doesn't work if we want to import code from a central
+protobuffer repository.
+
+It should be possible to do this with a build script, by pulling the
+protobuffers ourselves and then generating them once we've downloaded them. This
+will need some form of caching.
+
+This could probably be a library, let's call it =Ripcord= to go along with the
+theme.
 * Context
 In my employment, I pretty much exclusively work with Go. While I take
 performance and such into consideration when writing code, I haven't dealt with
