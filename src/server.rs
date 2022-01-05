@@ -1,46 +1,15 @@
 #[macro_use]
 extern crate tracing;
 
-// TODO: Potentially abstract this stuff with my own types for the purposes of
-// server initialisation.
-use tonic::{transport::Server, Request, Response, Status};
-
-// FIXME: Spantraces currently aren't reporting correctly, despite having an
-// ErrorLayer setup.
-use color_eyre::eyre::Result;
-
-// TODO: Move gRPC related code to its own module
-use hello_world::{
-    greeter_server::{Greeter, GreeterServer},
-    HelloReply, HelloRequest,
+use crate::{
+    grpc::{hello_service::greeter_server::GreeterServer, MyGreeter},
+    logging::init_subscriber,
 };
+use color_eyre::eyre::Result;
+use tonic::transport::Server;
 
-use crate::logging::init_subscriber;
-
+mod grpc;
 mod logging;
-pub mod hello_world {
-    tonic::include_proto!("helloworld"); // Must match proto package name
-}
-
-#[derive(Debug, Default)]
-pub struct MyGreeter {}
-
-#[tonic::async_trait]
-impl Greeter for MyGreeter {
-    #[tracing::instrument]
-    async fn say_hello(
-        &self,
-        request: Request<HelloRequest>,
-    ) -> Result<Response<HelloReply>, Status> {
-        info!("Handling request.");
-
-        let reply = hello_world::HelloReply {
-            message: format!("Hello {}!", request.into_inner().name),
-        };
-
-        Ok(Response::new(reply))
-    }
-}
 
 #[tokio::main]
 async fn main() -> Result<()> {
