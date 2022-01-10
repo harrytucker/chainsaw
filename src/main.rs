@@ -31,6 +31,12 @@ async fn main() -> Result<()> {
     health_report
         .set_serving::<GreeterServer<MyGreeter>>()
         .await;
+    health_report
+        .set_service_status(
+            "", /* clients may choose not to specify gRPC service on healthcheck */
+            tonic_health::ServingStatus::Serving,
+        )
+        .await;
 
     let addr = format!("{}:{}", configuration.grpc.address, configuration.grpc.port).parse()?;
     let greeter = MyGreeter::default();
