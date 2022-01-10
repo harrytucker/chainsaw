@@ -27,10 +27,16 @@ async fn main() -> Result<()> {
     let subscriber = logging::get_subscriber("info"); // default logging level
     init_subscriber(subscriber);
 
+    let (mut health_report, health_service) = tonic_health::server::health_reporter();
+    health_report
+        .set_serving::<GreeterServer<MyGreeter>>()
+        .await;
+
     let addr = format!("{}:{}", configuration.grpc.address, configuration.grpc.port).parse()?;
     let greeter = MyGreeter::default();
     let grpc = Server::builder()
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
+        .add_service(health_service)
         .add_service(GreeterServer::new(greeter))
         .serve(addr);
 
