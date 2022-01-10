@@ -1,8 +1,4 @@
-pub mod hello_service {
-    tonic::include_proto!("helloworld"); // must match proto package name
-}
-
-use hello_service::{greeter_server::Greeter, HelloReply, HelloRequest};
+use crate::grpc::helloworld::{greeter_server::Greeter, HelloReply, HelloRequest};
 use tonic::{Request, Response, Status};
 
 #[derive(Debug, Default)]
@@ -17,7 +13,7 @@ impl Greeter for MyGreeter {
     ) -> Result<Response<HelloReply>, Status> {
         info!("Handling request.");
 
-        let reply = hello_service::HelloReply {
+        let reply = HelloReply {
             message: format!("Hello {}!", request.into_inner().name),
         };
 

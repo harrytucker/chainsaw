@@ -2,9 +2,8 @@
 extern crate tracing;
 
 use crate::{
-    config::get_configuration,
-    grpc::{hello_service::greeter_server::GreeterServer, MyGreeter},
-    logging::init_subscriber,
+    config::get_configuration, grpc::helloworld::greeter_server::GreeterServer,
+    grpc_impl::MyGreeter, logging::init_subscriber,
 };
 use color_eyre::eyre::Result;
 use tokio::signal;
@@ -12,6 +11,7 @@ use tonic::transport::Server;
 
 mod config;
 mod grpc;
+mod grpc_impl;
 mod logging;
 
 #[tokio::main]
