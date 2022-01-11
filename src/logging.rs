@@ -22,7 +22,7 @@ pub fn get_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send 
 /// the given subscriber as the global default subscriber for structured logging
 /// events.
 ///
-/// Calling this twice will result in panic.
+/// Calling this twice will result in a code panic.
 pub fn init_subscriber(subscriber: impl Subscriber + Send + Sync) {
     LogTracer::init().expect("Failed to setup standard library log receiver.");
     set_global_default(subscriber).expect("Failed to set global logging subscriber.");
