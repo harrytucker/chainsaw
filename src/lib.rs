@@ -1,3 +1,7 @@
-pub fn me_me() -> String {
-    "WOw".into()
-}
+pub mod logging;
+
+pub mod health {}
+
+pub mod server {}
+
+pub mod metrics {}

@@ -6,8 +6,8 @@ use tracing_subscriber::{prelude::*, EnvFilter, Registry};
 /// Returns a [`tracing`] subscriber to receive structured logging events.
 ///
 /// To set this as the global logger, as well as to receive events from the
-/// standard library log facade, call [`init_subscriber`].
-pub fn get_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send + Sync {
+/// standard library log facade, call [`set_global_logger`].
+pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send + Sync {
     let env_filter =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter.into()));
     let log_format = tracing_subscriber::fmt::layer();
@@ -23,7 +23,7 @@ pub fn get_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send 
 /// events.
 ///
 /// Calling this twice will result in a code panic.
-pub fn init_subscriber(subscriber: impl Subscriber + Send + Sync) {
+pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) {
     LogTracer::init().expect("Failed to setup standard library log receiver.");
     set_global_default(subscriber).expect("Failed to set global logging subscriber.");
 }

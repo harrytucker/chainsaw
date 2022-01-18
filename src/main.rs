@@ -3,8 +3,9 @@ extern crate tracing;
 
 use crate::{
     config::get_configuration, grpc::helloworld::greeter_server::GreeterServer,
-    grpc_impl::MyGreeter, logging::init_subscriber,
+    grpc_impl::MyGreeter,
 };
+use chainsaw::logging;
 use color_eyre::eyre::Result;
 use tokio::signal;
 use tonic::transport::Server;
@@ -12,7 +13,6 @@ use tonic::transport::Server;
 mod config;
 mod grpc;
 mod grpc_impl;
-mod logging;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -24,8 +24,8 @@ async fn main() -> Result<()> {
 
     let configuration = get_configuration()?;
 
-    let subscriber = logging::get_subscriber("info"); // default logging level
-    init_subscriber(subscriber);
+    let subscriber = logging::new_subscriber("info"); // default logging level
+    logging::set_global_logger(subscriber);
 
     let (mut health_report, health_service) = tonic_health::server::health_reporter();
     health_report
