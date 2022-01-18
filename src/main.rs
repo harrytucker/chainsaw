@@ -5,8 +5,7 @@ use crate::{
     config::get_configuration, grpc::helloworld::greeter_server::GreeterServer,
     grpc_impl::MyGreeter,
 };
-use chainsaw::logging;
-use color_eyre::eyre::Result;
+use chainsaw::{logging, Result};
 use tokio::signal;
 use tonic::transport::Server;
 
