@@ -5,7 +5,10 @@ use crate::{
     config::get_configuration, grpc::helloworld::greeter_server::GreeterServer,
     grpc_impl::MyGreeter,
 };
-use chainsaw::{logging, Result};
+use chainsaw::{
+    health::{self, ServingStatus},
+    logging, Result,
+};
 use tokio::signal;
 use tonic::transport::Server;
 
@@ -20,15 +23,16 @@ async fn main() -> Result<()> {
     let subscriber = logging::new_subscriber("info"); // default logging level
     logging::set_global_logger(subscriber);
 
-    let (mut health_report, health_service) = tonic_health::server::health_reporter();
+    // TODO: Wrapping the function that returns these types in order to set the
+    // global serving status doesn't work due to some type-system shenanigans.
+    //
+    // Health service ergonomics may work better by instead initialising the
+    // HealthReporter and HealthServer within a Chainsaw::Server type than
+    // handling this in fn main().
+    let (mut health_report, health_service) = health::reporter();
+    chainsaw::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
     health_report
         .set_serving::<GreeterServer<MyGreeter>>()
-        .await;
-    health_report
-        .set_service_status(
-            "", /* clients may choose not to specify gRPC service on healthcheck */
-            tonic_health::ServingStatus::Serving,
-        )
         .await;
 
     let addr = format!("{}:{}", configuration.grpc.address, configuration.grpc.port).parse()?;
