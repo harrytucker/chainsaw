@@ -19,7 +19,7 @@ prost = "0.9"
 tonic-health = "0.5"
 
 # async runtime
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing", "signal"] }
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing", "signal", "parking_lot"] }
 
 # structured logging
 tracing = "0.1"
