@@ -15,12 +15,6 @@ mod grpc_impl;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Fancy span traces are omitted from the program when compiling in release
-    // mode to avoid impacting performance.
-    if cfg!(debug_assertions) {
-        color_eyre::install()?;
-    }
-
     let configuration = get_configuration()?;
 
     let subscriber = logging::new_subscriber("info"); // default logging level

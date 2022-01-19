@@ -34,3 +34,11 @@ serde = { version = "1.0", features = ["derive"] }
 
 [build-dependencies]
 tonic-build = "0.6" # build grpc code at compile-time
+
+[profile.dev.package.backtrace]
+# this is a performance optimisation for color-eyre, as the non-std
+# backtrace::Backtrace implementation does not contain pre-compiled optimations
+# like the std library implementation. See here:
+#
+# https://docs.rs/color-eyre/0.6.0/color_eyre/index.html#improving-perf-on-debug-builds
+opt-level = 3

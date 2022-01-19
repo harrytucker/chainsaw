@@ -20,10 +20,14 @@ pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send 
 
 /// Initialises [`LogTracer`] to capture log events with [`tracing`], and sets
 /// the given subscriber as the global default subscriber for structured logging
-/// events.
+/// events. Also enables [`color_eyre`] error and panic handling hooks for
+/// developer happiness.
 ///
 /// Calling this twice will result in a code panic.
 pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) {
     LogTracer::init().expect("Failed to setup standard library log receiver.");
     set_global_default(subscriber).expect("Failed to set global logging subscriber.");
+    color_eyre::install().expect(
+        "Chainsaw failed to configure color-eyre, did you already call color_eyre::install()?",
+    )
 }
