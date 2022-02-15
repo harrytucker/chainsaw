@@ -9,6 +9,7 @@ use chainsaw_demo::{
 use chainsaw_proto::helloworld::greeter_server::GreeterServer;
 use tokio::signal;
 use tonic::transport::Server;
+use tracing::Level;
 
 mod config;
 mod grpc_impl;
@@ -17,8 +18,8 @@ mod grpc_impl;
 async fn main() -> Result<()> {
     let configuration = get_configuration()?;
 
-    let subscriber = logging::new_subscriber("info"); // default logging level
-    logging::set_global_logger(subscriber);
+    let subscriber = logging::new_subscriber(Level::INFO)?; // default logging level
+    logging::set_global_logger(subscriber)?;
 
     // TODO: Wrapping the function that returns these types in order to set the
     // global serving status doesn't work due to some type-system shenanigans.

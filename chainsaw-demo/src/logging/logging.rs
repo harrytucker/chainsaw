@@ -1,26 +1,27 @@
+use crate::Result;
+
 use tracing::{subscriber::set_global_default, Level, Subscriber};
 use tracing_error::ErrorLayer;
 use tracing_log::LogTracer;
 use tracing_subscriber::{filter::filter_fn, prelude::*, EnvFilter};
 
-/// Tokio Console requires that the [`tokio`] target be logged at the TRACE
-/// level. This constant is used to add a directive to [`EnvFilter`] to do this.
+/// Tokio Console requires that the [`tokio`] and `runtime` targets be logged at
+/// the TRACE level. This constant is used to add a directive to [`EnvFilter`]
+/// to do this.
 const TOKIO_CONSOLE_FILTERS: &str = "tokio=trace";
+const RUNTIME_CONSOLE_FILTERS: &str = "runtime=trace";
 
 /// Returns a [`tracing`] subscriber to receive structured logging events.
 ///
 /// To set this as the global logger, as well as to receive events from the
 /// standard library log facade, call [`set_global_logger`].
-pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send + Sync {
+pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + Send + Sync> {
     // Filters tracing events based on the RUST_LOG environment variable, or
     // `env_filter` if RUST_LOG is not set.
-    let env_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new(env_filter.into()))
-        .add_directive(
-            TOKIO_CONSOLE_FILTERS
-                .parse() // Tokio Console requires tokio target to be TRACED
-                .expect("Chainsaw couldn't filter out Tokio Console events."),
-        );
+    let log_level = log_level.into();
+    let env_filter = EnvFilter::from(log_level.as_str())
+        .add_directive(TOKIO_CONSOLE_FILTERS.parse()?)
+        .add_directive(RUNTIME_CONSOLE_FILTERS.parse()?);
 
     // Enable support for capturing span traces when errors occur, used for
     // error reports with the `color-eyre` crate.
@@ -33,11 +34,11 @@ pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send 
     let tokio_filter = filter_fn(|metadata| metadata.level() != &Level::TRACE);
     let log_format = tracing_subscriber::fmt::layer().with_filter(tokio_filter);
 
-    tracing_subscriber::registry()
+    Ok(tracing_subscriber::registry()
         .with(tokio_console)
         .with(env_filter)
         .with(log_format)
-        .with(span_errors)
+        .with(span_errors))
 }
 
 /// Initialises [`LogTracer`] to capture log events with [`tracing`], and sets
@@ -46,10 +47,10 @@ pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send 
 /// developer happiness.
 ///
 /// Calling this twice will result in a code panic.
-pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) {
-    LogTracer::init().expect("Failed to setup standard library log receiver.");
-    set_global_default(subscriber).expect("Failed to set global logging subscriber.");
-    color_eyre::install().expect(
-        "Chainsaw failed to configure color-eyre, did you already call color_eyre::install()?",
-    )
+pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) -> Result<()> {
+    color_eyre::install()?;
+    LogTracer::init()?;
+    set_global_default(subscriber)?;
+
+    Ok(())
 }
