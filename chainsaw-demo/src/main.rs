@@ -1,15 +1,12 @@
 #[macro_use]
 extern crate tracing;
 
-use crate::{
-    config::get_configuration,
-    grpc_impl::MyGreeter,
-};
-use chainsaw_proto::helloworld::greeter_server::GreeterServer;
+use crate::{config::get_configuration, grpc_impl::MyGreeter};
 use chainsaw_demo::{
     health::{self, ServingStatus},
     logging, Result,
 };
+use chainsaw_proto::helloworld::greeter_server::GreeterServer;
 use tokio::signal;
 use tonic::transport::Server;
 
@@ -20,8 +17,8 @@ mod grpc_impl;
 async fn main() -> Result<()> {
     let configuration = get_configuration()?;
 
-    let subscriber = logging::new_subscriber(configuration.log.level);
-    logging::set_global_logger(subscriber);
+    let subscriber = logging::new_subscriber(configuration.log.level)?;
+    logging::set_global_logger(subscriber)?;
 
     // TODO: Wrapping the function that returns these types in order to set the
     // global serving status doesn't work due to some type-system shenanigans.
