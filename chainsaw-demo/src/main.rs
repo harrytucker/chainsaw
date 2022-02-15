@@ -20,7 +20,7 @@ mod grpc_impl;
 async fn main() -> Result<()> {
     let configuration = get_configuration()?;
 
-    let subscriber = logging::new_subscriber("info"); // default logging level
+    let subscriber = logging::new_subscriber(configuration.log.level);
     logging::set_global_logger(subscriber);
 
     // TODO: Wrapping the function that returns these types in order to set the
@@ -35,7 +35,7 @@ async fn main() -> Result<()> {
         .set_serving::<GreeterServer<MyGreeter>>()
         .await;
 
-    let addr = format!("{}:{}", configuration.grpc.address, configuration.grpc.port).parse()?;
+    let addr = configuration.grpc.serve_addr();
     let greeter = MyGreeter::default();
     let grpc = Server::builder()
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
