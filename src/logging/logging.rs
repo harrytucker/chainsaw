@@ -1,20 +1,23 @@
-use tracing::{subscriber::set_global_default, Subscriber};
+use tracing::{subscriber::set_global_default, Level, Subscriber};
 use tracing_error::ErrorLayer;
 use tracing_log::LogTracer;
-use tracing_subscriber::{prelude::*, EnvFilter, Registry};
+use tracing_subscriber::{filter::filter_fn, prelude::*, EnvFilter};
 
 /// Returns a [`tracing`] subscriber to receive structured logging events.
 ///
 /// To set this as the global logger, as well as to receive events from the
 /// standard library log facade, call [`set_global_logger`].
 pub fn new_subscriber<S: Into<String>>(env_filter: S) -> impl Subscriber + Send + Sync {
-    let env_filter =
-        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter.into()));
+    let env_filter = EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| EnvFilter::new(env_filter.into()))
+        .add_directive("tokio=trace".parse().unwrap());
     let log_format = tracing_subscriber::fmt::layer();
+    let tokio_console = console_subscriber::spawn();
 
-    Registry::default()
+    tracing_subscriber::registry()
+        .with(tokio_console)
         .with(env_filter)
-        .with(log_format)
+        .with(log_format.with_filter(filter_fn(|metadata| metadata.level() != &Level::TRACE)))
         .with(ErrorLayer::default())
 }
 
