@@ -2,10 +2,11 @@
 extern crate tracing;
 
 use crate::{
-    config::get_configuration, grpc::helloworld::greeter_server::GreeterServer,
+    config::get_configuration,
     grpc_impl::MyGreeter,
 };
-use chainsaw::{
+use chainsaw_proto::helloworld::greeter_server::GreeterServer;
+use chainsaw_demo::{
     health::{self, ServingStatus},
     logging, Result,
 };
@@ -13,7 +14,6 @@ use tokio::signal;
 use tonic::transport::Server;
 
 mod config;
-mod grpc;
 mod grpc_impl;
 
 #[tokio::main]
@@ -30,7 +30,7 @@ async fn main() -> Result<()> {
     // HealthReporter and HealthServer within a Chainsaw::Server type than
     // handling this in fn main().
     let (mut health_report, health_service) = health::reporter();
-    chainsaw::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
+    chainsaw_demo::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
     health_report
         .set_serving::<GreeterServer<MyGreeter>>()
         .await;

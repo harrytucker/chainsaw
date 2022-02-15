@@ -1,4 +1,4 @@
-use crate::grpc::helloworld::{greeter_server::Greeter, HelloReply, HelloRequest};
+use chainsaw_proto::helloworld::{greeter_server::Greeter, HelloReply, HelloRequest};
 use tonic::{Request, Response, Status};
 
 #[derive(Debug, Default)]
