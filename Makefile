@@ -12,7 +12,7 @@ grpc:
 	grpc_build build \
 		--in-dir chainsaw-proto/proto/helloworld.proto \
 		--out-dir chainsaw-proto/src/grpc \
-		-f -s
+		-f -s -c
 
 ## test: runs tests for whole workspace
 test:
