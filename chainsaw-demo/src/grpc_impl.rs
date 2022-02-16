@@ -1,4 +1,6 @@
-use chainsaw_proto::helloworld::{greeter_server::Greeter, HelloReply, HelloRequest};
+use chainsaw_proto::helloworld::v1::{
+    greeter_server::Greeter, HelloReply, HelloRequest, UuidGenReply, UuidGenRequest,
+};
 use tonic::{Request, Response, Status};
 
 #[derive(Debug, Default)]
@@ -18,5 +20,14 @@ impl Greeter for MyGreeter {
         };
 
         Ok(Response::new(reply))
+    }
+
+    #[tracing::instrument]
+    async fn uuid_gen(
+        &self,
+        _request: Request<UuidGenRequest>,
+    ) -> Result<Response<UuidGenReply>, Status> {
+        info!("Handling request.");
+        Err(Status::unimplemented("uuid_gen not implemented"))
     }
 }
