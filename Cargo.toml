@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "chainsaw-demo",
-    "chainsaw-grpcserver",
+    "chainsaw-middleware",
     "chainsaw-proto",
 ]
 
