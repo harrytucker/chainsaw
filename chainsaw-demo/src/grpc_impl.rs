@@ -13,7 +13,7 @@ impl Greeter for MyGreeter {
         &self,
         request: Request<HelloRequest>,
     ) -> Result<Response<HelloReply>, Status> {
-        info!("Handling request.");
+        tracing::info!("Handling request.");
 
         let reply = HelloReply {
             message: format!("Hello {}!", request.into_inner().name),
