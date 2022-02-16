@@ -6,7 +6,7 @@ use chainsaw_demo::{
     health::{self, ServingStatus},
     logging, Result,
 };
-use chainsaw_proto::helloworld::greeter_server::GreeterServer;
+use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
 use tokio::signal;
 use tonic::transport::Server;
 

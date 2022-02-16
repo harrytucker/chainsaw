@@ -10,6 +10,16 @@ pub struct HelloReply {
     #[prost(string, tag = "1")]
     pub message: ::prost::alloc::string::String,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UuidGenRequest {}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UuidGenReply {
+    /// [(validate.rules).string.uuid = true];
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "2")]
+    pub generated_at: ::core::option::Option<::prost_types::Timestamp>,
+}
 #[doc = r" Generated client implementations."]
 pub mod greeter_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -82,7 +92,22 @@ pub mod greeter_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/helloworld.Greeter/SayHello");
+            let path = http::uri::PathAndQuery::from_static("/helloworld.v1.Greeter/SayHello");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " Generate a UUID on demand"]
+        pub async fn uuid_gen(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UuidGenRequest>,
+        ) -> Result<tonic::Response<super::UuidGenReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/helloworld.v1.Greeter/UUIDGen");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -99,6 +124,11 @@ pub mod greeter_server {
             &self,
             request: tonic::Request<super::HelloRequest>,
         ) -> Result<tonic::Response<super::HelloReply>, tonic::Status>;
+        #[doc = " Generate a UUID on demand"]
+        async fn uuid_gen(
+            &self,
+            request: tonic::Request<super::UuidGenRequest>,
+        ) -> Result<tonic::Response<super::UuidGenReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct GreeterServer<T: Greeter> {
@@ -139,7 +169,7 @@ pub mod greeter_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/helloworld.Greeter/SayHello" => {
+                "/helloworld.v1.Greeter/SayHello" => {
                     #[allow(non_camel_case_types)]
                     struct SayHelloSvc<T: Greeter>(pub Arc<T>);
                     impl<T: Greeter> tonic::server::UnaryService<super::HelloRequest> for SayHelloSvc<T> {
@@ -160,6 +190,37 @@ pub mod greeter_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = SayHelloSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/helloworld.v1.Greeter/UUIDGen" => {
+                    #[allow(non_camel_case_types)]
+                    struct UUIDGenSvc<T: Greeter>(pub Arc<T>);
+                    impl<T: Greeter> tonic::server::UnaryService<super::UuidGenRequest> for UUIDGenSvc<T> {
+                        type Response = super::UuidGenReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UuidGenRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).uuid_gen(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = UUIDGenSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
@@ -202,6 +263,6 @@ pub mod greeter_server {
         }
     }
     impl<T: Greeter> tonic::transport::NamedService for GreeterServer<T> {
-        const NAME: &'static str = "helloworld.Greeter";
+        const NAME: &'static str = "helloworld.v1.Greeter";
     }
 }
