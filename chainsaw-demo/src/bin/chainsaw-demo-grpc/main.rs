@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate tracing;
 
-use crate::{config::get_configuration, grpc_impl::MyGreeter};
+use crate::config::get_configuration;
 use chainsaw_demo::{
+    grpc_impl::MyGreeter,
     health::{self, ServingStatus},
     logging, Result,
 };
@@ -12,7 +13,6 @@ use tonic::transport::Server;
 use tracing::Level;
 
 mod config;
-mod grpc_impl;
 
 #[tokio::main]
 async fn main() -> Result<()> {
