@@ -29,6 +29,7 @@
 //! - [Tracing](tracing) - A highly-configurable structured logging library.
 //! - [Serde](serde) - A (fantastic) serialisation library for Rust.
 
+pub mod grpc_impl;
 pub mod health;
 pub mod logging;
 

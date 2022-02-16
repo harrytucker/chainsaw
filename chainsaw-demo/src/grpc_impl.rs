@@ -13,7 +13,7 @@ impl Greeter for MyGreeter {
         &self,
         request: Request<HelloRequest>,
     ) -> Result<Response<HelloReply>, Status> {
-        info!("Handling request.");
+        tracing::info!("Handling request.");
 
         let reply = HelloReply {
             message: format!("Hello {}!", request.into_inner().name),
@@ -27,7 +27,7 @@ impl Greeter for MyGreeter {
         &self,
         _request: Request<UuidGenRequest>,
     ) -> Result<Response<UuidGenReply>, Status> {
-        info!("Handling request.");
+        tracing::info!("Handling request.");
         Err(Status::unimplemented("uuid_gen not implemented"))
     }
 }
