@@ -1,3 +1,10 @@
+pub mod google {
+    pub mod protobuf {
+        include!("google.protobuf.rs");
+    }
+}
 pub mod helloworld {
-    include!("helloworld.rs");
+    pub mod v1 {
+        include!("helloworld.v1.rs");
+    }
 }

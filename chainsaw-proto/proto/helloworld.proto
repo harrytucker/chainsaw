@@ -1,9 +1,17 @@
 syntax = "proto3";
-package helloworld;
+
+option go_package = "helloworld/v1;helloworld_v1";
+package helloworld.v1;
+
+// import "validate.proto"; // rust support not yet available, see https://github.com/envoyproxy/protoc-gen-validate/issues/457
+import "google/protobuf/timestamp.proto";
 
 service Greeter {
     // Our SayHello rpc accepts HelloRequests and returns HelloReplies
     rpc SayHello (HelloRequest) returns (HelloReply);
+
+    // Generate a UUID on demand
+    rpc UUIDGen (UUIDGenRequest) returns (UUIDGenReply);
 }
 
 message HelloRequest {
@@ -14,4 +22,11 @@ message HelloRequest {
 message HelloReply {
     // Reply contains the greeting message
     string message = 1;
+}
+
+message UUIDGenRequest {}
+
+message UUIDGenReply {
+    string                      id              = 1; // [(validate.rules).string.uuid = true];
+    google.protobuf.Timestamp   generated_at    = 2;
 }
