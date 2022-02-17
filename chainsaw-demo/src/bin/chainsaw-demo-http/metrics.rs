@@ -14,7 +14,7 @@ use prometheus::{Counter, Encoder, Opts, Registry, TextEncoder};
 ///
 /// # Example
 ///
-/// ```
+/// ```compile_fail
 /// let metrics_registry = Registry::new();
 /// // register any metrics
 ///
