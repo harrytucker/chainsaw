@@ -15,7 +15,8 @@ async fn main() -> Result<()> {
     let subscriber = logging::new_subscriber(configuration.log.level)?;
     logging::set_global_logger(subscriber)?;
 
-    // Create a Prometheus registry and register an example metric.
+    // Create a Prometheus registry and register an example metric. Sharing
+    // across threads is fine as both Registry and Counter are `Send + Sync`.
     let metrics_registry = Registry::new();
     let example_counter = metrics::new_example_counter(
         "example_counter",
