@@ -6,6 +6,10 @@
 
 use crate::Result;
 
+use tower_http::{
+    classify::{ServerErrorsAsFailures, SharedClassifier},
+    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+};
 use tracing::{subscriber::set_global_default, Level, Subscriber};
 use tracing_error::ErrorLayer;
 use tracing_log::LogTracer;
@@ -59,4 +63,15 @@ pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) -> Result<()
     set_global_default(subscriber)?;
 
     Ok(())
+}
+
+pub fn http_trace_layer() -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>> {
+    TraceLayer::new_for_http()
+        .make_span_with(
+            DefaultMakeSpan::new()
+                .include_headers(true)
+                .level(Level::INFO),
+        )
+        .on_request(DefaultOnRequest::new().level(Level::INFO))
+        .on_response(DefaultOnResponse::new().level(Level::INFO))
 }
