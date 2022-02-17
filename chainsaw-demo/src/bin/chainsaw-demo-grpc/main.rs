@@ -1,15 +1,22 @@
 #[macro_use]
 extern crate tracing;
 
+use std::iter::once;
+
 use crate::config::get_configuration;
 use chainsaw_demo::{
     grpc_impl::MyGreeter,
     health::{self, ServingStatus},
     logging, Result,
 };
+use chainsaw_middleware::auth::ParseJWTGrpcAuth;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
+use hyper::header;
 use tokio::signal;
 use tonic::transport::Server;
+use tower::ServiceBuilder;
+use tower_http::auth::RequireAuthorizationLayer;
+use tower_http::sensitive_headers::SetSensitiveHeadersLayer;
 
 mod config;
 
@@ -34,8 +41,19 @@ async fn main() -> Result<()> {
 
     let addr = configuration.grpc.serve_addr();
     let greeter = MyGreeter::default();
+
+    let auth_paths = vec!["/helloworld.v1.Greeter/SayHello".to_string()];
+
+    let layer = ServiceBuilder::new()
+        .layer(SetSensitiveHeadersLayer::new(once(header::AUTHORIZATION)))
+        .layer(RequireAuthorizationLayer::custom(ParseJWTGrpcAuth::new(
+            auth_paths,
+        )))
+        .into_inner();
+
     let grpc = Server::builder()
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
+        .layer(layer)
         .add_service(health_service)
         .add_service(GreeterServer::new(greeter))
         .serve(addr);
