@@ -9,14 +9,14 @@ use chainsaw_demo::{
     health::{self, ServingStatus},
     logging, Result,
 };
+use chainsaw_middleware::auth::ParseJWTAuth;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
+use hyper::header;
 use tokio::signal;
 use tonic::transport::Server;
 use tower::ServiceBuilder;
 use tower_http::auth::RequireAuthorizationLayer;
-use chainsaw_middleware::auth::ParseJWTAuth;
 use tower_http::sensitive_headers::SetSensitiveHeadersLayer;
-use hyper::header;
 
 mod config;
 
@@ -42,9 +42,13 @@ async fn main() -> Result<()> {
     let addr = configuration.grpc.serve_addr();
     let greeter = MyGreeter::default();
 
+    let auth_paths = vec!["/helloworld.v1.Greeter/SayHello".to_string()];
+
     let layer = ServiceBuilder::new()
         .layer(SetSensitiveHeadersLayer::new(once(header::AUTHORIZATION)))
-        .layer(RequireAuthorizationLayer::custom(ParseJWTAuth::default()))
+        .layer(RequireAuthorizationLayer::custom(ParseJWTAuth::new(
+            auth_paths,
+        )))
         .into_inner();
 
     let grpc = Server::builder()
