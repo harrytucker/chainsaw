@@ -15,6 +15,7 @@ async fn main() -> Result<()> {
     let subscriber = logging::new_subscriber(configuration.log.level)?;
     logging::set_global_logger(subscriber)?;
 
+    // Create a Prometheus registry and register an example metric.
     let metrics_registry = Registry::new();
     let example_counter = metrics::new_example_counter(
         "example_counter",
@@ -22,6 +23,7 @@ async fn main() -> Result<()> {
     )?;
     metrics_registry.register(Box::new(example_counter.clone()))?;
 
+    // Create HTTP router with greeter and metric endpoints.
     let http_addr = configuration.http.serve_addr();
     let http_router = Router::new()
         .route("/:name/:surname", routing::get(greeter::greeter))
