@@ -13,8 +13,12 @@ pub use tonic_health::{
 /// # Example
 ///
 /// ```
+/// use chainsaw_demo::health::{self, ServingStatus};
+///
+/// # async fn example() {
 /// let (mut health_report, health_service) = health::reporter();
-/// chainsaw::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
+/// health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
+/// # }
 /// ```
 pub async fn set_global_status(mut reporter: HealthReporter, status: ServingStatus) {
     // The `grpc.healthy.v1` specification allows clients to send an empty

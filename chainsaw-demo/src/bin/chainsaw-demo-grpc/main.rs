@@ -1,11 +1,13 @@
 #[macro_use]
 extern crate tracing;
 
+use std::sync::Arc;
+
 use crate::config::get_configuration;
 use chainsaw_demo::{
     grpc_impl::MyGreeter,
     health::{self, ServingStatus},
-    logging, Result,
+    logging, usecases, Result,
 };
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
 use tokio::signal;
@@ -33,7 +35,9 @@ async fn main() -> Result<()> {
         .await;
 
     let addr = configuration.grpc.serve_addr();
-    let greeter = MyGreeter::default();
+    let usecase: Arc<Box<dyn usecases::HelloUseCase>> =
+        Arc::new(Box::new(usecases::Hello::default()));
+    let greeter = MyGreeter::new(usecase);
     let grpc = Server::builder()
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
         .add_service(health_service)
