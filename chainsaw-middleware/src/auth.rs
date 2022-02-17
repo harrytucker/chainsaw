@@ -20,11 +20,11 @@ pub struct CustomerIdExtension(String);
 pub struct JwtExtension(String);
 
 #[derive(Clone, Debug, Default)]
-pub struct ParseJWTAuth {
+pub struct ParseJWTGrpcAuth {
     paths: Vec<String>,
 }
 
-impl ParseJWTAuth {
+impl ParseJWTGrpcAuth {
     ///
     ///
     ///
@@ -33,7 +33,7 @@ impl ParseJWTAuth {
     }
 }
 
-impl<B> AuthorizeRequest<B> for ParseJWTAuth {
+impl<B> AuthorizeRequest<B> for ParseJWTGrpcAuth {
     type ResponseBody = tonic::body::BoxBody;
 
     fn authorize(&mut self, request: &mut Request<B>) -> Result<(), Response<Self::ResponseBody>> {

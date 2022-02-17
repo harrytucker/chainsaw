@@ -9,7 +9,7 @@ use chainsaw_demo::{
     health::{self, ServingStatus},
     logging, Result,
 };
-use chainsaw_middleware::auth::ParseJWTAuth;
+use chainsaw_middleware::auth::ParseJWTGrpcAuth;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
 use hyper::header;
 use tokio::signal;
@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
 
     let layer = ServiceBuilder::new()
         .layer(SetSensitiveHeadersLayer::new(once(header::AUTHORIZATION)))
-        .layer(RequireAuthorizationLayer::custom(ParseJWTAuth::new(
+        .layer(RequireAuthorizationLayer::custom(ParseJWTGrpcAuth::new(
             auth_paths,
         )))
         .into_inner();
