@@ -202,6 +202,7 @@ dependencies = [
  "tokio",
  "tonic",
  "tonic-health",
+ "tower",
  "tower-http",
  "tracing",
  "tracing-error",

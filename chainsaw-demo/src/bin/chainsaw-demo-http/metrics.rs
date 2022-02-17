@@ -44,3 +44,45 @@ pub fn new_example_counter<S: Into<String>>(name: S, help: S) -> Result<Counter>
     let opts = Opts::new(name.into(), help.into());
     Ok(Counter::with_opts(opts)?)
 }
+
+#[cfg(test)]
+mod test {
+    use axum::{body::Body, http::Request};
+    use tower::ServiceExt;
+
+    use super::*;
+    use crate::app;
+
+    #[tokio::test]
+    async fn metrics_reported() {
+        // Create a Prometheus registry and register an example metric. Sharing
+        // across threads is fine as both Registry and Counter are `Send + Sync`.
+        let registry = Registry::new();
+        let counter = new_example_counter(
+            "example_counter",
+            "Reflects the number of times the greeter endpoint has been called.",
+        )
+        .unwrap();
+
+        registry.register(Box::new(counter.clone())).unwrap();
+
+        let app = app(registry, counter);
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/metrics")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
+        assert_eq!(
+            &body[..],
+            b"# HELP example_counter Reflects the number of times the greeter endpoint has been called.\n\
+              # TYPE example_counter counter\n\
+              example_counter 0\n\
+        ")
+    }
+}

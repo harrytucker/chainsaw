@@ -1,7 +1,7 @@
 use crate::{config::get_configuration, metrics::report_metrics};
 use axum::{routing, AddExtensionLayer, Router};
 use chainsaw_demo::{logging, Result};
-use prometheus::Registry;
+use prometheus::{Counter, Registry};
 use tokio::signal;
 
 mod config;
@@ -26,12 +26,7 @@ async fn main() -> Result<()> {
 
     // Create HTTP router with greeter and metric endpoints.
     let http_addr = configuration.http.serve_addr();
-    let http_router = Router::new()
-        .route("/:name/:surname", routing::get(greeter::greeter))
-        .route("/metrics", routing::get(report_metrics))
-        .layer(AddExtensionLayer::new(metrics_registry))
-        .layer(AddExtensionLayer::new(example_counter))
-        .layer(logging::http_trace_layer());
+    let http_router = app(metrics_registry, example_counter);
     let http = axum::Server::bind(&http_addr).serve(http_router.into_make_service());
 
     tracing::info!(?http, "Revving up HTTP Chainsaw!");
@@ -41,4 +36,13 @@ async fn main() -> Result<()> {
     signal::ctrl_c().await?;
     tracing::info!("Revving down Chainsaw...");
     Ok(())
+}
+
+pub fn app(registry: Registry, metric: Counter) -> Router {
+    Router::new()
+        .route("/:name/:surname", routing::get(greeter::greeter))
+        .route("/metrics", routing::get(report_metrics))
+        .layer(AddExtensionLayer::new(registry))
+        .layer(AddExtensionLayer::new(metric))
+        .layer(logging::http_trace_layer())
 }

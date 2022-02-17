@@ -16,6 +16,7 @@ chainsaw-proto = { version = "0.1", path = "../chainsaw-proto" }
 
 # http application framework
 axum = "0.4.5"
+tower = "0.4.11"
 tower-http = { version = "0.2.2", features = ["trace"] }
 hyper = "0.14.17"
 
