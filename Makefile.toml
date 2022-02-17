@@ -1,0 +1,29 @@
+# ================================================
+# Chainsaw
+# ================================================
+#
+# Install cargo make to run these tasks:
+#   cargo install cargo-make
+
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[tasks.tests]
+install_crate = "cargo-nextest"
+command = "cargo"
+args = ["nextest", "run"]
+
+[tasks.grpc]
+install_crate = "grpc-build"
+command = "grpc_build"
+args = [
+     "build",
+     "--in-dir",
+     "chainsaw-proto/proto/helloworld.proto",
+     "--out-dir",
+     "chainsaw-proto/src/grpc",
+     "-f", # force output
+     "-s", # generate server impl
+     "-c", # generate client impl
+]
