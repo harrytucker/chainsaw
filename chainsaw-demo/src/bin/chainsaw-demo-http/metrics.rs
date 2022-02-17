@@ -65,6 +65,8 @@ mod test {
         .unwrap();
 
         registry.register(Box::new(counter.clone())).unwrap();
+        let expected_metric_count = 5 as f64;
+        counter.inc_by(expected_metric_count);
 
         let app = app(registry, counter);
         let response = app
@@ -82,7 +84,7 @@ mod test {
             &body[..],
             b"# HELP example_counter Reflects the number of times the greeter endpoint has been called.\n\
               # TYPE example_counter counter\n\
-              example_counter 0\n\
+              example_counter 5\n\
         ")
     }
 }
