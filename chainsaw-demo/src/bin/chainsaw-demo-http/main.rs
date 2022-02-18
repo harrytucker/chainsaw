@@ -1,10 +1,12 @@
-use crate::config::get_configuration;
-use axum::{routing, Router};
+use crate::{config::get_configuration, metrics::report_metrics};
+use axum::{routing, AddExtensionLayer, Router};
 use chainsaw_demo::{logging, Result};
+use prometheus::{Counter, Registry};
 use tokio::signal;
 
 mod config;
 mod greeter;
+mod metrics;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -13,18 +15,34 @@ async fn main() -> Result<()> {
     let subscriber = logging::new_subscriber(configuration.log.level)?;
     logging::set_global_logger(subscriber)?;
 
+    // Create a Prometheus registry and register an example metric. Sharing
+    // across threads is fine as both Registry and Counter are `Send + Sync`.
+    let metrics_registry = Registry::new();
+    let example_counter = metrics::new_example_counter(
+        "example_counter",
+        "Reflects the number of times the greeter endpoint has been called.",
+    )?;
+    metrics_registry.register(Box::new(example_counter.clone()))?;
+
+    // Create HTTP router with greeter and metric endpoints.
     let http_addr = configuration.http.serve_addr();
-    let http_router = Router::new()
-        .route("/:name/:surname", routing::get(greeter::greeter))
-        .layer(logging::http_trace_layer());
+    let http_router = app(metrics_registry, example_counter);
     let http = axum::Server::bind(&http_addr).serve(http_router.into_make_service());
 
     tracing::info!(?http, "Revving up HTTP Chainsaw!");
     tokio::spawn(http);
 
-    signal::ctrl_c()
-        .await
-        .expect("Unable to listen for shutdown signal.");
+    // Exit if SIGINT received.
+    signal::ctrl_c().await?;
     tracing::info!("Revving down Chainsaw...");
     Ok(())
+}
+
+pub fn app(registry: Registry, metric: Counter) -> Router {
+    Router::new()
+        .route("/:name/:surname", routing::get(greeter::greeter))
+        .route("/metrics", routing::get(report_metrics))
+        .layer(AddExtensionLayer::new(registry))
+        .layer(AddExtensionLayer::new(metric))
+        .layer(logging::http_trace_layer())
 }

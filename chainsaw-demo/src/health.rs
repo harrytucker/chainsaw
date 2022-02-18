@@ -12,7 +12,7 @@ pub use tonic_health::{
 ///
 /// # Example
 ///
-/// ```
+/// ```compile_fail
 /// let (mut health_report, health_service) = health::reporter();
 /// chainsaw::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
 /// ```
