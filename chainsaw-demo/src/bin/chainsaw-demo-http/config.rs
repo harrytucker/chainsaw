@@ -5,19 +5,19 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Chainsaw {
-    pub http: HTTP,
+    pub http: Http,
 
     pub log: Log,
 }
 
 #[derive(Deserialize)]
-pub struct HTTP {
+pub struct Http {
     #[serde(default = "default_http_address")]
     pub address: IpAddr,
     pub port: u16,
 }
 
-impl HTTP {
+impl Http {
     pub fn serve_addr(&self) -> SocketAddr {
         SocketAddr::new(self.address, self.port)
     }

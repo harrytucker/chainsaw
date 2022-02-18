@@ -5,19 +5,19 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Chainsaw {
-    pub grpc: GRPC,
+    pub grpc: Grpc,
 
     pub log: Log,
 }
 
 #[derive(Deserialize)]
-pub struct GRPC {
+pub struct Grpc {
     #[serde(default = "default_grpc_address")]
     pub address: IpAddr,
     pub port: u16,
 }
 
-impl GRPC {
+impl Grpc {
     pub fn serve_addr(&self) -> SocketAddr {
         SocketAddr::new(self.address, self.port)
     }
