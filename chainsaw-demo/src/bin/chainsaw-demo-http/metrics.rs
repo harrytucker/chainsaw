@@ -4,7 +4,7 @@ use crate::Result;
 
 use axum::extract::Extension;
 use hyper::StatusCode;
-use prometheus::{Counter, Encoder, Opts, Registry, TextEncoder};
+use prometheus::{Counter, Opts, Registry, TextEncoder};
 
 /// HTTP endpoint that exposes all registered metrics to a Prometheus scrape
 /// run.
@@ -25,9 +25,10 @@ use prometheus::{Counter, Encoder, Opts, Registry, TextEncoder};
 pub async fn report_metrics(
     Extension(metrics_registry): Extension<Registry>,
 ) -> Result<String, StatusCode> {
-    // Gather the metrics.
+    // Create a new Prometheus text encoder, and gather all our metrics.
     let encoder = TextEncoder::new();
     let metric_families = metrics_registry.gather();
+
     match encoder.encode_to_string(&metric_families) {
         Ok(metrics) => Ok(metrics),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
