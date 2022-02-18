@@ -37,6 +37,8 @@ pub mod server {}
 
 pub mod metrics {}
 
+pub mod usecases;
+
 // Chainsaw re-exports types from other libraries that may be used across many
 // modules for ease-of-importing.
 
