@@ -37,14 +37,14 @@ impl<B> AuthorizeRequest<B> for ParseJWTGrpcAuth {
     type ResponseBody = tonic::body::BoxBody;
 
     fn authorize(&mut self, request: &mut Request<B>) -> Result<(), Response<Self::ResponseBody>> {
-        let path = request_path(&request);
+        let path = request_path(request);
 
         if !self.paths.contains(&path) {
             tracing::info!(%path, "path does not require authentication");
             return Ok(());
         }
 
-        if let Some(token) = check_auth(&request) {
+        if let Some(token) = check_auth(request) {
             match decode_jwt(&token) {
                 Ok(claims) => {
                     request.extensions_mut().insert(JwtExtension(token));
