@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use chainsaw_middleware::auth::UserIdExtension;
 use chainsaw_proto::helloworld::v1::{
     greeter_server::Greeter, HelloReply, HelloRequest, UuidGenReply, UuidGenRequest,
 };
@@ -26,6 +27,12 @@ impl Greeter for MyGreeter {
         request: Request<HelloRequest>,
     ) -> Result<Response<HelloReply>, Status> {
         tracing::info!("Handling request.");
+
+        if let Some(user_id) = request.extensions().get::<UserIdExtension>() {
+            tracing::info!(?user_id, "user id from jwt sub claim");
+        } else {
+            tracing::warn!("missing user id from jwt sub claim");
+        }
 
         let reply = HelloReply {
             message: self.usecase.execute(&request.into_inner().name),

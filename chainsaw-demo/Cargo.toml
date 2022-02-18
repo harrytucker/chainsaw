@@ -13,11 +13,13 @@ path = "src/lib.rs"
 tonic = "0.6"
 tonic-health = "0.5"
 chainsaw-proto = { version = "0.1", path = "../chainsaw-proto" }
+chainsaw-middleware = { version = "0.1", path = "../chainsaw-middleware" }
+tower = "0.4.11"
+tower-http = { version = "0.2.2", features = ["auth", "sensitive-headers", "trace"] }
+hyper = "0.14.17"
 
 # http application framework
 axum = "0.4.5"
-tower-http = { version = "0.2.2", features = ["trace"] }
-hyper = "0.14.17"
 
 # async runtime
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing", "signal", "parking_lot"] }
