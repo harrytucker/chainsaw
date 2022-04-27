@@ -4,7 +4,7 @@
 //! opinionated configurations to allow you to use [`tracing`] in your
 //! microservice.
 
-use crate::Result;
+use color_eyre::Result;
 
 use tower_http::{
     classify::{ServerErrorsAsFailures, SharedClassifier},

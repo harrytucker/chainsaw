@@ -236,6 +236,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.4.5",
  "chainsaw-middleware",
+ "chainsaw-observe",
  "chainsaw-proto",
  "color-eyre",
  "config",
@@ -266,6 +267,19 @@ dependencies = [
  "tower",
  "tower-http 0.2.2",
  "tracing",
+]
+
+[[package]]
+name = "chainsaw-observe"
+version = "0.1.0"
+dependencies = [
+ "color-eyre",
+ "console-subscriber",
+ "tower-http 0.2.2",
+ "tracing",
+ "tracing-error",
+ "tracing-log",
+ "tracing-subscriber",
 ]
 
 [[package]]

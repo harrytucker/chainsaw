@@ -7,9 +7,10 @@ use crate::config::get_configuration;
 use chainsaw_demo::{
     grpc_impl::MyGreeter,
     health::{self, ServingStatus},
-    logging, Result,
+    Result,
 };
 use chainsaw_middleware::auth::ParseJWTGrpcAuth;
+use chainsaw_observe::logging;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
 use hyper::header;
 use tokio::signal;

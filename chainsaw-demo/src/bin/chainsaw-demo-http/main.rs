@@ -1,6 +1,7 @@
 use crate::{config::get_configuration, metrics::report_metrics};
 use axum::{routing, AddExtensionLayer, Router};
-use chainsaw_demo::{logging, Result};
+use chainsaw_demo::Result;
+use chainsaw_observe::logging;
 use prometheus::{Counter, Registry};
 use tokio::signal;
 

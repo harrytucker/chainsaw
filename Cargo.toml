@@ -3,6 +3,7 @@ members = [
     "chainsaw-demo",
     "chainsaw-middleware",
     "chainsaw-proto",
+    "chainsaw-observe",
 ]
 
 [profile.dev.package.backtrace]

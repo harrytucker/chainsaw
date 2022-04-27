@@ -12,8 +12,9 @@ path = "src/lib.rs"
 # grpc and protobuf implementations
 tonic = "0.7"
 tonic-health = "0.6"
-chainsaw-proto = { version = "0.1", path = "../chainsaw-proto" }
-chainsaw-middleware = { version = "0.1", path = "../chainsaw-middleware" }
+chainsaw-proto = { path = "../chainsaw-proto" }
+chainsaw-middleware = { path = "../chainsaw-middleware" }
+chainsaw-observe = { path = "../chainsaw-observe" }
 tower = "0.4.12"
 tower-http = { version = "0.2.2", features = ["auth", "sensitive-headers", "trace"] }
 hyper = "0.14.17"

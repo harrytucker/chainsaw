@@ -31,7 +31,6 @@
 
 pub mod grpc_impl;
 pub mod health;
-pub mod logging;
 
 pub mod server {}
 
