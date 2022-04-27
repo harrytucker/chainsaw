@@ -74,7 +74,7 @@ fn check_auth<B>(request: &Request<B>) -> Option<String> {
         match value.to_str() {
             Ok(value) => {
                 if value.to_ascii_lowercase().starts_with("bearer ") {
-                    if let Some((_, token)) = value.split_once(" ") {
+                    if let Some((_, token)) = value.split_once(' ') {
                         Some(token.to_string())
                     } else {
                         None
