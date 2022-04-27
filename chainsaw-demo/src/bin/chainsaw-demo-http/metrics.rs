@@ -50,37 +50,32 @@ mod test {
     use crate::app;
 
     #[tokio::test]
-    async fn metrics_reported() {
+    async fn metrics_reported() -> Result<()> {
         // Create a Prometheus registry and register an example metric. Sharing
         // across threads is fine as both Registry and Counter are `Send + Sync`.
         let registry = Registry::new();
         let counter = new_example_counter(
             "example_counter",
             "Reflects the number of times the greeter endpoint has been called.",
-        )
-        .unwrap();
+        )?;
 
-        registry.register(Box::new(counter.clone())).unwrap();
+        registry.register(Box::new(counter.clone()))?;
         let expected_metric_count = 5 as f64;
         counter.inc_by(expected_metric_count);
 
         let app = app(registry, counter);
         let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/metrics")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
+            .oneshot(Request::builder().uri("/metrics").body(Body::empty())?)
+            .await?;
 
-        let body = hyper::body::to_bytes(response.into_body()).await.unwrap();
+        let body = hyper::body::to_bytes(response.into_body()).await?;
         assert_eq!(
             &body[..],
             b"# HELP example_counter Reflects the number of times the greeter endpoint has been called.\n\
               # TYPE example_counter counter\n\
               example_counter 5\n\
-        ")
+        ");
+
+        Ok(())
     }
 }
