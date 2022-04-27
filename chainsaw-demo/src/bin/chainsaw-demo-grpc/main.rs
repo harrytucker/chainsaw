@@ -4,10 +4,7 @@ extern crate tracing;
 use std::iter::once;
 
 use chainsaw::{config::get_configuration, Result};
-use chainsaw_demo::{
-    grpc_impl::MyGreeter,
-    health::{self, ServingStatus},
-};
+use chainsaw_demo::grpc_impl::MyGreeter;
 use chainsaw_middleware::auth::ParseJWTGrpcAuth;
 use chainsaw_observe::logging;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
@@ -31,8 +28,7 @@ async fn main() -> Result<()> {
     // Health service ergonomics may work better by instead initialising the
     // HealthReporter and HealthServer within a Chainsaw::Server type than
     // handling this in fn main().
-    let (mut health_report, health_service) = health::reporter();
-    chainsaw_demo::health::set_global_status(health_report.clone(), ServingStatus::Serving).await;
+    let (mut health_report, health_service) = tonic_health::server::health_reporter();
     health_report
         .set_serving::<GreeterServer<MyGreeter>>()
         .await;
