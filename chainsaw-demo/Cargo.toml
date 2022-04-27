@@ -10,11 +10,11 @@ path = "src/lib.rs"
 
 [dependencies]
 # grpc and protobuf implementations
-tonic = "0.6"
-tonic-health = "0.5"
+tonic = "0.7"
+tonic-health = "0.6"
 chainsaw-proto = { version = "0.1", path = "../chainsaw-proto" }
 chainsaw-middleware = { version = "0.1", path = "../chainsaw-middleware" }
-tower = "0.4.11"
+tower = "0.4.12"
 tower-http = { version = "0.2.2", features = ["auth", "sensitive-headers", "trace"] }
 hyper = "0.14.17"
 
@@ -27,7 +27,7 @@ tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing", "
 # structured logging
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter", "json"] }
-console-subscriber = { version = "0.1.2", features = ["parking_lot"] }
+console-subscriber = { version = "0.1.4", features = ["parking_lot"] }
 tracing-error = "0.2"
 tracing-log = "0.1"
 color-eyre = "0.6"
