@@ -1,0 +1,13 @@
+[package]
+name = "chainsaw-observe"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tower-http = { version = "0.2.2", features = ["auth", "sensitive-headers", "trace"] }
+tracing = "0.1"
+tracing-error = "0.2"
+tracing-subscriber = { version = "0.3", features = ["registry", "env-filter", "json"] }
+console-subscriber = { version = "0.1.4", features = ["parking_lot"] }
+tracing-log = "0.1"
+color-eyre = "0.6"
