@@ -1,29 +1,47 @@
-use std::net::{IpAddr, SocketAddr};
+use std::{
+    fmt::Debug,
+    net::{IpAddr, SocketAddr},
+};
 
 use config::Config;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Chainsaw {
-    pub http: Http,
+    pub grpc: Option<GRPC>,
+
+    pub http: Option<HTTP>,
 
     pub log: Log,
 }
 
-#[derive(Deserialize)]
-pub struct Http {
-    #[serde(default = "default_http_address")]
+#[derive(Debug, Deserialize)]
+pub struct GRPC {
+    #[serde(default = "default_serve_address")]
     pub address: IpAddr,
     pub port: u16,
 }
 
-impl Http {
+impl GRPC {
     pub fn serve_addr(&self) -> SocketAddr {
         SocketAddr::new(self.address, self.port)
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
+pub struct HTTP {
+    #[serde(default = "default_serve_address")]
+    pub address: IpAddr,
+    pub port: u16,
+}
+
+impl HTTP {
+    pub fn serve_addr(&self) -> SocketAddr {
+        SocketAddr::new(self.address, self.port)
+    }
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Log {
     #[serde(default)]
     pub level: LogLevel,
@@ -68,7 +86,7 @@ pub fn get_configuration() -> Result<Chainsaw, config::ConfigError> {
     settings.try_into()
 }
 
-fn default_http_address() -> IpAddr {
+fn default_serve_address() -> IpAddr {
     "0.0.0.0"
         .parse()
         .expect("failed to parse default grpc address")

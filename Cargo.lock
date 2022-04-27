@@ -231,15 +231,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "chainsaw"
+version = "0.1.0"
+dependencies = [
+ "color-eyre",
+ "config",
+ "serde 1.0.136",
+ "tracing",
+]
+
+[[package]]
 name = "chainsaw-demo"
 version = "0.1.0"
 dependencies = [
  "axum 0.4.5",
+ "chainsaw",
  "chainsaw-middleware",
  "chainsaw-observe",
  "chainsaw-proto",
  "color-eyre",
- "config",
  "console-subscriber",
  "hyper",
  "prometheus",

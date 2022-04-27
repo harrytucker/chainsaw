@@ -12,6 +12,7 @@ path = "src/lib.rs"
 # grpc and protobuf implementations
 tonic = "0.7"
 tonic-health = "0.6"
+chainsaw = { path = "../chainsaw" }
 chainsaw-proto = { path = "../chainsaw-proto" }
 chainsaw-middleware = { path = "../chainsaw-middleware" }
 chainsaw-observe = { path = "../chainsaw-observe" }
@@ -37,5 +38,4 @@ color-eyre = "0.6"
 prometheus = { version = "0.13", features = ["process"] }
 
 # configuration
-config = "0.11"
 serde = { version = "1.0", features = ["derive"] }
