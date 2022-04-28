@@ -13,6 +13,7 @@ use tower_http::auth::RequireAuthorizationLayer;
 use tower_http::sensitive_headers::SetSensitiveHeadersLayer;
 
 mod greeter;
+mod worker;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -49,6 +50,7 @@ async fn main() -> Result<()> {
     // such as extra gRPC services, HTTP endpoints, metrics etc.
     tracing::info!(?addr, "Revving up Chainsaw!");
     tokio::spawn(grpc);
+    tokio::spawn(worker::modify_server_health(health_report));
 
     // Exit if SIGINT received.
     signal::ctrl_c().await?;

@@ -9,6 +9,7 @@ pub struct MyGreeter {}
 
 #[tonic::async_trait]
 impl Greeter for MyGreeter {
+    /// gRPC endpoint that responds with a greeting for the supplied name.
     #[tracing::instrument]
     async fn say_hello(
         &self,
@@ -29,6 +30,7 @@ impl Greeter for MyGreeter {
         Ok(Response::new(reply))
     }
 
+    /// gRPC endpoint that responds with a randomly generated UUID.
     #[tracing::instrument]
     async fn uuid_gen(
         &self,
