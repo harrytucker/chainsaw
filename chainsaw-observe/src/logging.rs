@@ -81,6 +81,7 @@ pub fn set_global_logger(subscriber: impl Subscriber + Send + Sync) -> Result<()
     Ok(())
 }
 
+/// Provides a [`TraceLayer`] implementation for logging an Axum service.
 pub fn http_trace_layer() -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>> {
     TraceLayer::new_for_http()
         .make_span_with(

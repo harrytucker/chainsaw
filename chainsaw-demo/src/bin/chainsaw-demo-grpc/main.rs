@@ -4,16 +4,18 @@ extern crate tracing;
 use std::iter::once;
 
 use chainsaw::{config::get_configuration, Result};
-use chainsaw_demo::grpc_impl::MyGreeter;
 use chainsaw_middleware::auth::ParseJWTGrpcAuth;
 use chainsaw_observe::logging;
 use chainsaw_proto::helloworld::v1::greeter_server::GreeterServer;
+use greeter::MyGreeter;
 use hyper::header;
 use tokio::signal;
 use tonic::transport::Server;
 use tower::ServiceBuilder;
 use tower_http::auth::RequireAuthorizationLayer;
 use tower_http::sensitive_headers::SetSensitiveHeadersLayer;
+
+mod greeter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -36,7 +38,7 @@ async fn main() -> Result<()> {
     let addr = configuration.grpc.unwrap().serve_addr();
     let greeter = MyGreeter::default();
 
-    let auth_paths = vec!["/helloworld.v1.Greeter/SayHello".to_string()];
+    let auth_paths = vec!["/helloworld.v1.Greeter/UUIDGen".to_string()];
 
     let layer = ServiceBuilder::new()
         .layer(SetSensitiveHeadersLayer::new(once(header::AUTHORIZATION)))
