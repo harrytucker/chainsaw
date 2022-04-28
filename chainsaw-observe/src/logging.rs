@@ -13,7 +13,7 @@ use tower_http::{
 use tracing::{subscriber::set_global_default, Level, Subscriber};
 use tracing_error::ErrorLayer;
 use tracing_log::LogTracer;
-use tracing_subscriber::{filter::filter_fn, prelude::*, EnvFilter};
+use tracing_subscriber::{filter::filter_fn, prelude::*, EnvFilter, Layer};
 
 /// Tokio Console requires that the [`tokio`] and `runtime` targets be logged at
 /// the TRACE level. This constant is used to add a directive to [`EnvFilter`]
@@ -42,7 +42,23 @@ pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + 
     // events.
     let tokio_console = console_subscriber::spawn();
     let tokio_filter = filter_fn(|metadata| metadata.level() != &Level::TRACE);
-    let log_format = tracing_subscriber::fmt::layer().with_filter(tokio_filter);
+
+    // automatically switch between pretty and json log formats depending on the
+    // compilation profile
+    //
+    // the output needs to boxed in order to erase the interior types to get the
+    // match arm to function, see the following:
+    // https://docs.rs/tracing-subscriber/0.3.11/tracing_subscriber/layer/trait.Layer.html#method.boxed
+    let log_format = match cfg!(debug_assertions) {
+        true => tracing_subscriber::fmt::layer()
+            .pretty()
+            .with_filter(tokio_filter)
+            .boxed(),
+        false => tracing_subscriber::fmt::layer()
+            .json()
+            .with_filter(tokio_filter)
+            .boxed(),
+    };
 
     Ok(tracing_subscriber::registry()
         .with(tokio_console)

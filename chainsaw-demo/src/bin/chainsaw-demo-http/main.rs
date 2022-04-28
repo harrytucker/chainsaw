@@ -25,7 +25,7 @@ async fn main() -> Result<()> {
     metrics_registry.register(Box::new(example_counter.clone()))?;
 
     // Create HTTP router with greeter and metric endpoints.
-    let http_addr = configuration.http.serve_addr();
+    let http_addr = configuration.http.unwrap().serve_addr();
     let http_router = app(metrics_registry, example_counter);
     let http = axum::Server::bind(&http_addr).serve(http_router.into_make_service());
 
