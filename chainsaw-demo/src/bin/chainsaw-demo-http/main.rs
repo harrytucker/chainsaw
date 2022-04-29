@@ -1,5 +1,5 @@
 use crate::metrics::report_metrics;
-use axum::{routing, AddExtensionLayer, Router};
+use axum::{routing, Extension, Router};
 use chainsaw::{config::get_configuration, Result};
 use chainsaw_observe::logging;
 use prometheus::{Counter, Registry};
@@ -42,7 +42,7 @@ pub fn app(registry: Registry, metric: Counter) -> Router {
     Router::new()
         .route("/:name/:surname", routing::get(greeter::greeter))
         .route("/metrics", routing::get(report_metrics))
-        .layer(AddExtensionLayer::new(registry))
-        .layer(AddExtensionLayer::new(metric))
+        .layer(Extension(registry))
+        .layer(Extension(metric))
         .layer(logging::http_trace_layer())
 }
