@@ -40,3 +40,21 @@ impl Greeter for MyGreeter {
         Err(Status::unimplemented("uuid_gen not implemented"))
     }
 }
+
+#[cfg(test)]
+mod test {
+    use tonic::IntoRequest;
+
+    use super::*;
+    use crate::Result;
+
+    #[tokio::test]
+    async fn greeter_happy_path() -> Result<()> {
+        let greeter = MyGreeter::default();
+        let request = HelloRequest::default();
+
+        let resp = greeter.say_hello(request.into_request()).await?;
+        assert!(resp.into_inner().message == "Hello !");
+        Ok(())
+    }
+}

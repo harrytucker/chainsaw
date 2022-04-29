@@ -10,9 +10,9 @@ default_to_workspace = false
 skip_core_tasks = true
 
 [tasks.tests]
-install_crate = "cargo-nextest"
 command = "cargo"
-args = ["nextest", "run"]
+args = [ "llvm-cov", "nextest" ]
+dependencies = [ "install-llvm-cov", "install-nextest" ]
 
 [tasks.docs]
 command = "cargo"
@@ -31,3 +31,13 @@ args = [
      "-s", # generate server impl
      "-c", # generate client impl
 ]
+
+# Installation targets must be used to define multiple dependency crates for a
+# single target.
+#
+# See: https://github.com/sagiegurari/cargo-make#multiple-installations
+[tasks.install-nextest]
+install_crate = { crate_name = "cargo-nextest" }
+
+[tasks.install-llvm-cov]
+install_crate = { rustup_component_name = "llvm-tools-preview" }
