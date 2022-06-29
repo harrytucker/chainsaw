@@ -40,7 +40,7 @@ async fn main() -> Result<()> {
 
 pub fn app(registry: Registry, metric: Counter) -> Router {
     Router::new()
-        .route("/:name/:surname", routing::get(greeter::greeter))
+        .route("/chainsaw/:name/:surname", routing::get(greeter::greeter))
         .route("/metrics", routing::get(report_metrics))
         .layer(Extension(registry))
         .layer(Extension(metric))
