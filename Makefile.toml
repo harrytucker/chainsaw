@@ -2,12 +2,16 @@
 # Chainsaw
 # ================================================
 #
-# Install cargo make to run these tasks:
+# Install cargo-make to run these tasks:
 #   cargo install cargo-make
 
 [config]
 default_to_workspace = false
 skip_core_tasks = true
+
+[env]
+CHAINSAW_HTTP_TARGET = "chainsaw-demo-http"
+CHAINSAW_GRPC_TARGET = "chainsaw-demo-grpc"
 
 [tasks.tests]
 command = "cargo"
@@ -30,6 +34,31 @@ args = [
      "-f", # force output
      "-s", # generate server impl
      "-c", # generate client impl
+]
+
+[tasks.docker]
+dependencies = [ "docker-http", "docker-grpc" ]
+
+[tasks.docker-http]
+command = "docker"
+args = [
+     "build",
+     "--tag", # tag as:
+     "${CHAINSAW_HTTP_TARGET}",
+     "--target",
+     "${CHAINSAW_HTTP_TARGET}",
+     ".", # build context
+]
+
+[tasks.docker-grpc]
+command = "docker"
+args = [
+     "build",
+     "--tag", # tag as:
+     "${CHAINSAW_GRPC_TARGET}",
+     "--target",
+     "${CHAINSAW_GRPC_TARGET}",
+     ".", # build context
 ]
 
 # Installation targets must be used to define multiple dependency crates for a
