@@ -69,6 +69,10 @@ spec:
       app.kubernetes.io/instance: chainsaw-http
   template:
     metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "3000"
+        prometheus.io/scrape: "true"
       labels:
         app: chainsaw-http
         version: "1.16.0"
