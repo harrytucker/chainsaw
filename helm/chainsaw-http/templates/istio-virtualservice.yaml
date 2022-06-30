@@ -14,7 +14,7 @@ spec:
     - uri:
         exact: /metrics
     - uri:
-        prefix: /chainsaw
+        prefix: /chainsaw/
     route:
     - destination:
         host: {{ $fullName }}

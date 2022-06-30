@@ -1,5 +1,4 @@
 {{- $fullName := include "chainsaw-http.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -9,7 +8,7 @@ spec:
     istio: ingressgateway # use istio default controller
   servers:
   - port:
-      number: {{ $svcPort }}
+      number: 80
       name: http
       protocol: HTTP
     hosts:

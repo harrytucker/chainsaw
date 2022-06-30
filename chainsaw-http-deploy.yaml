@@ -35,7 +35,7 @@ spec:
   type: ClusterIP
   ports:
     - port: 3000
-      targetPort: http
+      targetPort: 3000
       protocol: TCP
       name: http
   selector:
@@ -82,20 +82,12 @@ spec:
         - name: chainsaw-http
           securityContext:
             {}
-          image: "chainsaw-demo-http:latest"
-          imagePullPolicy: IfNotPresent
+          image: "local-dev-registry:64541/chainsaw/demo-http:latest"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {}
 ---
@@ -109,7 +101,7 @@ spec:
     istio: ingressgateway # use istio default controller
   servers:
   - port:
-      number: 3000
+      number: 80
       name: http
       protocol: HTTP
     hosts:
@@ -130,7 +122,7 @@ spec:
     - uri:
         exact: /metrics
     - uri:
-        prefix: /chainsaw
+        prefix: /chainsaw/
     route:
     - destination:
         host: chainsaw-http
