@@ -5,6 +5,7 @@ use prometheus::{Counter, Registry};
 use tokio::signal;
 
 mod greeter;
+mod xiv;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -39,6 +40,7 @@ async fn main() -> Result<()> {
 pub fn app(registry: Registry, metric: Counter) -> Router {
     Router::new()
         .route("/chainsaw/:name/:surname", routing::get(greeter::greeter))
+        .route("/xiv/:item_name", routing::get(xiv::get_item))
         .route("/metrics", routing::get(metrics::prometheus_scrape_handler))
         .layer(Extension(registry))
         .layer(Extension(metric))

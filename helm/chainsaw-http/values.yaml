@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: local-dev-registry:64541/chainsaw/demo-http
+  repository: local-dev-registry:64541/chainsaw-demo-http
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

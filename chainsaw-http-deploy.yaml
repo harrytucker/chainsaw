@@ -127,6 +127,8 @@ spec:
         exact: /metrics
     - uri:
         prefix: /chainsaw/
+    - uri:
+        prefix: /xiv/
     route:
     - destination:
         host: chainsaw-http
