@@ -9,5 +9,7 @@ tracing = "0.1"
 tracing-error = "0.2"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter", "json"] }
 console-subscriber = { version = "0.1.4", features = ["parking_lot"] }
+tracing-opentelemetry = "0.17"
+opentelemetry = { version = "0.17", features = ["rt-tokio"] }
 tracing-log = "0.1"
 color-eyre = "0.6"

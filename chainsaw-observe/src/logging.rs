@@ -6,6 +6,7 @@
 
 use color_eyre::Result;
 
+use opentelemetry::sdk::export::trace::stdout;
 use tower_http::{
     classify::{ServerErrorsAsFailures, SharedClassifier},
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
@@ -43,6 +44,9 @@ pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + 
     let tokio_console = console_subscriber::spawn();
     let tokio_filter = filter_fn(|metadata| metadata.level() != &Level::TRACE);
 
+    let tracer = stdout::new_pipeline().install_simple();
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+
     // automatically switch between pretty and json log formats depending on the
     // compilation profile
     //
@@ -61,6 +65,7 @@ pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + 
     };
 
     Ok(tracing_subscriber::registry()
+        .with(telemetry)
         .with(tokio_console)
         .with(env_filter)
         .with(log_format)
