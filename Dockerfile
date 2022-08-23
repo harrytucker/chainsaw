@@ -1,4 +1,4 @@
-FROM rust:1.61-bullseye AS chef
+FROM rust:1.63-bullseye AS chef
 
 RUN cargo install cargo-chef; \
     rustup component add rustfmt;
