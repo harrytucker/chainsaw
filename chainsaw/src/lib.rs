@@ -26,11 +26,11 @@
 //! primary libraries in use by Chainsaw when using the library, particularly if
 //! you need to search for any example code or documentation for these.
 //!
-//! - [Tokio](tokio) - An asynchronous runtime for the Rust programming language.
-//! - [Tonic](tonic) - A gRPC client and server library built on top of the Tokio
-//!                    stack.
-//! - [Tracing](tracing) - A highly-configurable structured logging library.
-//! - [Serde](serde) - A (fantastic) serialisation library for Rust.
+//! - Tokio   - An asynchronous runtime for the Rust programming language.
+//! - Tonic   - A gRPC client and server library built on top of the Tokio
+//!           stack.
+//! - Tracing - A highly-configurable structured logging library.
+//! - Serde   - A (fantastic) serialisation library for Rust.
 
 pub mod config;
 

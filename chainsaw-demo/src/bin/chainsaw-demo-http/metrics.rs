@@ -2,25 +2,25 @@
 
 use crate::Result;
 
-use axum::extract::Extension;
+use axum::Extension;
 use hyper::StatusCode;
 use prometheus::{Counter, Opts, Registry, TextEncoder};
 
 /// HTTP endpoint that exposes all registered metrics to a Prometheus scrape
 /// run.
 ///
-/// In order to gather metrics from the registry, you should use
-/// [`axum::AddExtensionLayer`] to expose your registry to this handler.
+/// In order to gather metrics from the registry, you should combine
+/// [`axum::Extension`] with a layer to expose your registry to this handler.
 ///
 /// # Example
 ///
-/// ```compile_fail
+/// ```
 /// let metrics_registry = Registry::new();
 /// // register any metrics
 ///
-/// let http_router = Router::new()
+/// let http_router = axum::Router::new()
 ///     // add any routes or other layers
-///     .layer(AddExtensionLayer::new(metrics_registry));
+///     .layer(Extension(metrics_registry));
 /// ```
 pub async fn report_metrics(
     Extension(metrics_registry): Extension<Registry>,
