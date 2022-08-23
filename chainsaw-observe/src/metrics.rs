@@ -1,6 +1,6 @@
 //! Provides a HTTP handler for exposing metrics to a Prometheus scraper.
 
-use crate::Result;
+use chainsaw::Result;
 
 use axum::Extension;
 use hyper::StatusCode;
@@ -15,14 +15,13 @@ use prometheus::{Counter, Opts, Registry, TextEncoder};
 /// # Example
 ///
 /// ```
-/// let metrics_registry = Registry::new();
+/// let metrics_registry = prometheus::Registry::new();
 /// // register any metrics
 ///
-/// let http_router = axum::Router::new()
-///     // add any routes or other layers
-///     .layer(Extension(metrics_registry));
+/// let http_router: axum::Router = axum::Router::new()
+///     .layer(axum::Extension(metrics_registry));
 /// ```
-pub async fn report_metrics(
+pub async fn prometheus_scrape_handler(
     Extension(metrics_registry): Extension<Registry>,
 ) -> Result<String, StatusCode> {
     // Create a new Prometheus text encoder, and gather all our metrics.
@@ -43,11 +42,17 @@ pub fn new_example_counter<S: Into<String>>(name: S, help: S) -> Result<Counter>
 
 #[cfg(test)]
 mod test {
-    use axum::{body::Body, http::Request};
+    use axum::{body::Body, http::Request, routing, Router};
     use tower::ServiceExt;
 
     use super::*;
-    use crate::app;
+
+    fn test_router(registry: Registry, metric: Counter) -> Router {
+        Router::new()
+            .route("/metrics", routing::get(prometheus_scrape_handler))
+            .layer(Extension(registry))
+            .layer(Extension(metric))
+    }
 
     #[tokio::test]
     async fn metrics_reported() -> Result<()> {
@@ -63,8 +68,8 @@ mod test {
         let expected_metric_count = 5 as f64;
         counter.inc_by(expected_metric_count);
 
-        let app = app(registry, counter);
-        let response = app
+        let router = test_router(registry, counter);
+        let response = router
             .oneshot(Request::builder().uri("/metrics").body(Body::empty())?)
             .await?;
 

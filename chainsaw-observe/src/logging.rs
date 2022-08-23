@@ -6,7 +6,7 @@
 
 use color_eyre::Result;
 
-use opentelemetry::sdk::export::trace::stdout;
+use opentelemetry::global::Error;
 use tower_http::{
     classify::{ServerErrorsAsFailures, SharedClassifier},
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
@@ -44,7 +44,9 @@ pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + 
     let tokio_console = console_subscriber::spawn();
     let tokio_filter = filter_fn(|metadata| metadata.level() != &Level::TRACE);
 
-    let tracer = stdout::new_pipeline().install_simple();
+    opentelemetry::global::set_error_handler(otel_error_handler)?;
+    let tracer =
+        opentelemetry_jaeger::new_pipeline().install_batch(opentelemetry::runtime::Tokio)?;
     let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
 
     // automatically switch between pretty and json log formats depending on the
@@ -70,6 +72,21 @@ pub fn new_subscriber<L: Into<Level>>(log_level: L) -> Result<impl Subscriber + 
         .with(env_filter)
         .with(log_format)
         .with(span_errors))
+}
+
+/// Receives errors produced by [`opentelemetry`]'s tracing code and logs them
+/// using the [`tracing::error!`] macro instead of [`eprintln!`].
+///
+/// There are more variants produced by the [`Error`] enum than just
+/// [`Error::Trace`], however they are locked behind feature flags that are
+/// currently not enabled.
+fn otel_error_handler(error: Error) {
+    match error {
+        Error::Trace(_) => {
+            tracing::error!(%error, "OpenTelemetry encountered a tracing error")
+        }
+        _ => tracing::error!(%error, "OpenTelemetry encountered unknown error"),
+    }
 }
 
 /// Initialises [`LogTracer`] to capture log events with [`tracing`], and sets

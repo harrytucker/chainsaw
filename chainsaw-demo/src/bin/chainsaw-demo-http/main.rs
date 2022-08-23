@@ -1,12 +1,10 @@
-use crate::metrics::report_metrics;
 use axum::{routing, Extension, Router};
 use chainsaw::{config::get_configuration, Result};
-use chainsaw_observe::logging;
+use chainsaw_observe::{logging, metrics};
 use prometheus::{Counter, Registry};
 use tokio::signal;
 
 mod greeter;
-mod metrics;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -41,7 +39,7 @@ async fn main() -> Result<()> {
 pub fn app(registry: Registry, metric: Counter) -> Router {
     Router::new()
         .route("/chainsaw/:name/:surname", routing::get(greeter::greeter))
-        .route("/metrics", routing::get(report_metrics))
+        .route("/metrics", routing::get(metrics::prometheus_scrape_handler))
         .layer(Extension(registry))
         .layer(Extension(metric))
         .layer(logging::http_trace_layer())
