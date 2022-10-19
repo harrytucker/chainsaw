@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
 
     let auth_paths = vec!["/helloworld.v1.Greeter/UUIDGen".to_string()];
 
-    let layer = ServiceBuilder::new()
+    let _layer = ServiceBuilder::new()
         .layer(SetSensitiveHeadersLayer::new(once(header::AUTHORIZATION)))
         .layer(RequireAuthorizationLayer::custom(ParseJWTGrpcAuth::new(
             auth_paths,
@@ -40,8 +40,8 @@ async fn main() -> Result<()> {
         .into_inner();
 
     let grpc = Server::builder()
+        // .layer(layer) FIXME: currently the Auth layer is breaking the types.
         .trace_fn(|_| tracing::info_span!("chainsaw-server"))
-        .layer(layer)
         .add_service(health_service)
         .add_service(GreeterServer::new(greeter))
         .serve(addr);

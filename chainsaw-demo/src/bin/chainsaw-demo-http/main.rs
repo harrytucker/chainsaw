@@ -3,6 +3,8 @@ use chainsaw::{config::get_configuration, Result};
 use chainsaw_observe::{logging, metrics};
 use prometheus::{Counter, Registry};
 use tokio::signal;
+use tower::ServiceBuilder;
+use tower_http::ServiceBuilderExt;
 
 mod greeter;
 mod xiv;
@@ -44,5 +46,9 @@ pub fn app(registry: Registry, metric: Counter) -> Router {
         .route("/metrics", routing::get(metrics::prometheus_scrape_handler))
         .layer(Extension(registry))
         .layer(Extension(metric))
-        .layer(logging::http_trace_layer())
+        .layer(
+            ServiceBuilder::new()
+                .layer(logging::http_trace_layer())
+                .propagate_x_request_id(),
+        )
 }

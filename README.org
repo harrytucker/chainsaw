@@ -1,16 +1,10 @@
 #+TITLE: Chainsaw - Rusty Microservices
 #+AUTHOR: Harry Tucker
 
-* Work in Progress [1/9]
-** TODO Overall architecture
-** TODO gRPC server infrastructure to handle arbitrary services
+* Work in Progress [3/9]
 ** DONE Structured logging and instrumentation
-** TODO Metrics through Prometheus
-** TODO Error handling
-** TODO Unit and integration testing
-** TODO Documentation
-** TODO Performance characterisation
-** TODO Compile protobuffers from external git repository
+** DONE Metrics through Prometheus
+** DONE Compile protobuffers from external git repository
 Using Go, we normally generate our protobuffer code ahead of time, and then
 store the generated code as packages in a Git repository. Tonic works a bit
 differently, generating the code at compile-time using a macros and a build
@@ -23,9 +17,57 @@ will need some form of caching.
 
 This could probably be a library, let's call it =Ripcord= to go along with the
 theme.
+** STRT Overall architecture
+** STRT Error handling
+** STRT Unit and integration testing
+** STRT Documentation
+** TODO Performance characterisation
+** TODO gRPC server infrastructure to handle arbitrary services
 * Context
 In my employment, I pretty much exclusively work with Go. While I take
 performance and such into consideration when writing code, I haven't dealt with
 anything that has hit the limits of the Go runtime. I'm trying to get better
 with Rust so I'd like to see what a gRPC-based microservice would look like in
 Rust.
+* Environment Setup
+The Chainsaw demo packages provide Helm charts that can be deployed to a
+Kubernetes cluster, and is intended to work with an Istio service mesh. For
+local development, I recommend using [[https://k3d.io/][K3D]], for which a cluster config is provided
+as =k3d-conf.yaml= within the project root. You can use this to spin up a local
+cluster and Docker registry using the following:
+#+begin_src bash
+k3d cluster create --config k3d-conf.yaml
+#+end_src
+K3D will expose a local Docker registry on port =64541=, so you can push images to
+this port to make them available to your local cluster.
+#+begin_src bash
+# You can either tag and push the image yourself:
+docker tag <image> localhost:64541/<image>
+docker push localhost:64541/<image>
+
+# Or you can use the K3D CLI to import the image:
+k3d image import <image>
+#+end_src
+
+To deploy one of the provided Chainsaw demo applications, you'll need to build
+the Docker images, import them into the K3D-provided Docker registry, and then
+deploy the Helm chart. This repository provides some =cargo-make= targets you can
+use to make this easier:
+#+begin_src bash
+# Ensure you have cargo-make installed
+cargo install cargo-make --force
+
+# Build Docker images
+cargo make docker-http
+
+# View Helm-templated output
+cargo make helm-http
+
+# Install Helm chart
+helm install chainsaw helm/chainsaw-http
+#+end_src
+Provided you aren't making any changes to the Helm chart itself, code changes
+can be tested by simply importing your updated Docker image into K3D, and then
+deleting the deployed Kubernetes pod for Chainsaw. The =imagePullPolicy= is
+currently defined as =Always=, so when the pod is recreated by the deployment, the
+new Docker image will automatically be pulled.

@@ -86,7 +86,7 @@ spec:
         - name: chainsaw-http
           securityContext:
             {}
-          image: "local-dev-registry:64541/chainsaw/demo-http:latest"
+          image: "registry.localhost:64541/chainsaw-demo-http:latest"
           imagePullPolicy: Always
           ports:
             - name: http

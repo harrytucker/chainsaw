@@ -17,11 +17,11 @@ chainsaw-proto = { path = "../chainsaw-proto" }
 chainsaw-middleware = { path = "../chainsaw-middleware" }
 chainsaw-observe = { path = "../chainsaw-observe" }
 tower = "0.4.12"
-tower-http = { version = "0.2.2", features = ["auth", "sensitive-headers", "trace"] }
+tower-http = { version = "0.3.4", features = ["full"] }
 hyper = "0.14.17"
 
 # http application framework
-axum = "0.5.4"
+axum = { version = "0.5.16", features = ["headers"] }
 
 # async runtime
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "tracing", "signal", "parking_lot"] }
@@ -39,8 +39,12 @@ prometheus = { version = "0.13", features = ["process"] }
 
 # configuration
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
 
 # functionality
 # xivapi = { path = "../../xivapi-rs" }
 ffxiv_types = "1.8.0"
 reqwest = "0.11.11"
+
+[dev-dependencies]
+pretty_assertions = "1.2.1"

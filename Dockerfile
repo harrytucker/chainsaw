@@ -1,4 +1,4 @@
-FROM rust:1.63-bullseye AS chef
+FROM rust:1.64-bullseye AS chef
 
 RUN cargo install cargo-chef; \
     rustup component add rustfmt;
@@ -18,10 +18,18 @@ RUN apt-get install cmake -y
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --bin chainsaw-demo-grpc
+# RUN cargo build --release --bin chainsaw-demo-grpc
 RUN cargo build --release --bin chainsaw-demo-http
 
 FROM debian:bullseye-slim AS base-runtime
+# Running apt again here to install common certificate authorites on the
+# base-runtime target.
+#
+# The previous install including `cmake` is dropped as this layer is independent
+# of the previous.
+RUN apt-get update
+RUN apt-get install ca-certificates -y
+
 WORKDIR app
 COPY chainsaw.toml chainsaw.toml
 
@@ -31,8 +39,8 @@ COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo-http /us
 EXPOSE 3000
 CMD ["chainsaw-demo-http"]
 
-FROM base-runtime AS chainsaw-demo-grpc
-COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo-grpc /usr/local/bin/
+# FROM base-runtime AS chainsaw-demo-grpc
+# COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo-grpc /usr/local/bin/
 
-EXPOSE 5001
-CMD ["chainsaw-demo-grpc"]
+# EXPOSE 5001
+# CMD ["chainsaw-demo-grpc"]
