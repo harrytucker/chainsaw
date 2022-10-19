@@ -3,7 +3,6 @@ members = [
     "chainsaw",
     "chainsaw-demo",
     "chainsaw-middleware",
-    "chainsaw-proto",
     "chainsaw-observe",
 ]
 

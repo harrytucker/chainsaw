@@ -12,7 +12,7 @@ tower-http = { version = "0.3.4", features = ["auth", "sensitive-headers", "trac
 tracing = "0.1"
 tracing-error = "0.2"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter", "json"] }
-console-subscriber = { version = "0.1.4", features = ["parking_lot"] }
+console-subscriber = { version = "0.1.8", features = ["parking_lot"] }
 tracing-log = "0.1"
 color-eyre = "0.6"
 
@@ -20,5 +20,5 @@ tokio = { version = "*", features = ["macros"] }
 
 # metrics support
 prometheus = { version = "0.13", features = ["process"] }
-hyper = "0.14.17"
-axum = "0.5.4"
+hyper = "0.14.20"
+axum = "0.5.16"

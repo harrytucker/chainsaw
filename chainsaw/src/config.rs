@@ -78,12 +78,12 @@ impl Default for LogLevel {
 /// Reads application configuration from either a `chainsaw.toml` file, or from
 /// environment variables.
 pub fn get_configuration() -> Result<Chainsaw, config::ConfigError> {
-    let mut settings = Config::default();
+    let builder = Config::builder()
+        .add_source(config::Environment::default())
+        .add_source(config::File::with_name("chainsaw"))
+        .build()?;
 
-    settings.merge(config::File::with_name("chainsaw"))?;
-    settings.merge(config::Environment::default())?;
-
-    settings.try_into()
+    builder.try_deserialize()
 }
 
 fn default_serve_address() -> IpAddr {
