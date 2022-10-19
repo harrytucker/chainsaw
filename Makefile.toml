@@ -3,7 +3,7 @@
 # ================================================
 #
 # Install cargo-make to run these tasks:
-#   cargo install cargo-make
+#   cargo install cargo-make --force
 
 [config]
 default_to_workspace = false
@@ -13,10 +13,15 @@ skip_core_tasks = true
 CHAINSAW_HTTP_TARGET = "chainsaw-demo-http"
 CHAINSAW_GRPC_TARGET = "chainsaw-demo-grpc"
 
-[tasks.tests]
+[tasks.test]
 command = "cargo"
-args = [ "llvm-cov", "nextest" ]
-dependencies = [ "install-llvm-cov", "install-nextest" ]
+args = [ "nextest", "run" ]
+install_crate = "cargo-nextest"
+
+[tasks.coverage]
+command = "cargo"
+args = [ "llvm-cov" ]
+install_crate = "cargo-llvm-cov"
 
 [tasks.docs]
 command = "cargo"
@@ -76,13 +81,3 @@ args = [
      "${CHAINSAW_GRPC_TARGET}",
      ".", # build context
 ]
-
-# Installation targets must be used to define multiple dependency crates for a
-# single target.
-#
-# See: https://github.com/sagiegurari/cargo-make#multiple-installations
-[tasks.install-nextest]
-install_crate = { crate_name = "cargo-nextest" }
-
-[tasks.install-llvm-cov]
-install_crate = { rustup_component_name = "llvm-tools-preview" }
