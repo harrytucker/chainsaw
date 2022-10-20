@@ -19,7 +19,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 # RUN cargo build --release --bin chainsaw-demo-grpc
-RUN cargo build --release --bin chainsaw-demo-http
+RUN cargo build --release
 
 FROM debian:bullseye-slim AS base-runtime
 # Running apt again here to install common certificate authorites on the
@@ -34,10 +34,10 @@ WORKDIR app
 COPY chainsaw.toml chainsaw.toml
 
 FROM base-runtime AS chainsaw-demo-http
-COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo-http /usr/local/bin/
+COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo /usr/local/bin/
 
 EXPOSE 3000
-CMD ["chainsaw-demo-http"]
+CMD ["chainsaw-demo"]
 
 # FROM base-runtime AS chainsaw-demo-grpc
 # COPY --from=builder --chown=root:root /app/target/release/chainsaw-demo-grpc /usr/local/bin/
