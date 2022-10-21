@@ -49,6 +49,10 @@ docker push localhost:64541/<image>
 k3d image import <image>
 #+end_src
 
+To install Istio, the =istioctl= tool is currently the method recommended by the
+developers. You can check out the documentation for installing this to your new
+K3D cluster here: [[https://istio.io/latest/docs/setup/install/istioctl/][Install with Istioctl]].
+
 To deploy one of the provided Chainsaw demo applications, you'll need to build
 the Docker images, import them into the K3D-provided Docker registry, and then
 deploy the Helm chart. This repository provides some =cargo-make= targets you can
